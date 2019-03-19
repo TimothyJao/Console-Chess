@@ -77,15 +77,14 @@ class Cursor
 
   def handle_key(key)
     if MOVES.include? key
-      diff = MOVES[key]
-      update_pos(diff)
+      update_pos(MOVES[key])
       return nil
     elsif key == :return || key == :space
       return cursor_pos
     elsif key == :ctrl_c
       Process.exit(0)
     end
-    nil
+    # nil
   end
 
   def valid_pos?(pos)

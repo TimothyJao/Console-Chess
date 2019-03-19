@@ -5,72 +5,35 @@ require "colorize"
 class Display
   include Curses
   attr_reader :board, :cursor
-  def initialize(board)
+  def initialize(board, pos=[7,0])
     @board = board
-    @cursor = Cursor.new([7,0], board)
+    @cursor = Cursor.new(pos, board)
   end
 
   def render
-    
     board.grid.each_with_index do |row, idx1|
       row.each_with_index do |piece, idx2|
         if cursor.cursor_pos == [idx1, idx2]
-          print to_pic(piece).colorize( :color => :black , :background => :red )
+          print piece.symbol.colorize( :color => :black , :background => :red )
         elsif (idx1 + idx2).even?
-          print to_pic(piece).colorize( :background => :white, :color => :black )
+          print piece.symbol.colorize( :background => :white, :color => :black )
         else
-          print to_pic(piece).colorize( :background => :green, :color => :black )
+          print piece.symbol.colorize( :background => :green, :color => :black )
         end
       end
-      puts 
+      puts "\r\n"
     end
   end
 
-  def to_pic(piece)
-    return " " if piece.nil?
-    case piece.color
-    when "White"
-      case piece.name
-      when "Pawn"
-        return "♙"
-      when "Rook"
-        return "♖"
-      when "Knight"
-        return "♘"
-      when "Bishop"
-        return "♗"
-      when "Queen"
-        return "♕"
-      when "King"
-        return "♔"
-      end
-    when "Black"
-      case piece.name
-      when "Pawn"
-        return "♟"
-      when "Rook"
-        return "♜"
-      when "Knight"
-        return "♞"
-      when "Bishop"
-        return "♝"
-      when "Queen"
-        return "♛"
-      when "King"
-        return "♚"
-      end
-    end
-  end
-  def display
+  def display(message)
     key = nil
+    curs_set(0)
     while key.nil?
-      # curs_set(1)
       system("clear")
       render
-      # curs_set(0)
+      puts message
       key = cursor.get_input
     end
-    p key
     key
   end
 end
