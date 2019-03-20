@@ -32,18 +32,18 @@ class Game
         if board.checkmate?(current_player)
           switch_player
           puts "\r\n#{self.current_player.capitalize} wins"
-          sleep(5)
+          sleep(1)
           Process.exit(0)
         end
         if board.in_check?(current_player)        
           puts "\r\n#{self.current_player.capitalize} is in check"
-          sleep(3)
+          sleep(1)
         end
         turn
       rescue RuntimeError => e
         puts "\r\n"
         puts e.message
-        sleep(3)
+        sleep(1)
         retry
       end
     end

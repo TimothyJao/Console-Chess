@@ -55,11 +55,32 @@ class Board
     raise "Invalid position!" if check_pos(start_pos)
     raise "Invalid position!" if check_pos(end_pos)
     piece = self.grid[start_pos.first][start_pos.last]
-    raise "This piece cannot move here!" unless piece.pos_moves(self).include?(end_pos)
-    raise "You can't put yourself in check!" unless valid_moves(color)[piece].include?(end_pos)
-    piece.pos = end_pos
-    self.grid[start_pos.first][start_pos.last] = NullPiece.instance
-    self.grid[end_pos.first][end_pos.last] = piece
+    if piece.name == :king && piece.castle(self, end_pos, color)
+      if end_pos.last == 6
+        self[[end_pos.first, 6]] = piece
+        self[[end_pos.first, 5]] = self[[end_pos.first, 7]]
+        self[[end_pos.first, 4]] = NullPiece.instance
+        self[[end_pos.first, 7]] = NullPiece.instance
+        piece.pos = end_pos
+        self[[end_pos.first, 5]].pos = [end_pos.first, 5]
+      elsif end_pos.last == 2
+        self[[end_pos.first, 2]] = piece
+        self[[end_pos.first, 3]] = self[[end_pos.first, 0]]
+        self[[end_pos.first, 4]] = NullPiece.instance
+        self[[end_pos.first, 0]] = NullPiece.instance
+        piece.pos = end_pos
+        self[[end_pos.first, 3]].pos = [end_pos.first, 3]
+      end
+    else
+      raise "This piece cannot move here!" unless piece.pos_moves(self).include?(end_pos)
+      raise "You can't put yourself in check!" unless valid_moves(color)[piece].include?(end_pos)
+      piece.pos = end_pos
+      if [:king, :rook].include? piece.name
+        piece.moved = true
+      end
+      self.grid[start_pos.first][start_pos.last] = NullPiece.instance
+      self.grid[end_pos.first][end_pos.last] = piece
+    end
   end
 
   def check_pos(pos)

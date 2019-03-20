@@ -34,9 +34,10 @@ end
 class Rook < Piece
 
   include Slideable
-
+  attr_accessor :moved
   def initialize(name, pos, color)
     super
+    @moved = false
     if @color == :black
       @symbol = " ♜ "
     else
